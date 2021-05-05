@@ -121,6 +121,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "accounts.authentication.JWTAuthentication",
+        "accounts.authentication.JWTCookieAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.permissions.AllowAny",]
     # "DEFAULT_THROTTLE_CLASSES": [

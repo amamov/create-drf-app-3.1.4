@@ -3,15 +3,19 @@ not using refresh token
 오직 refresh token만 사용
 """
 
-import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from rest_framework.response import Response
+
+from accounts.authentication import JWTCookieAuthentication
 from accounts.jwt import generate_access_token
 from accounts.permissions import IsAuthenticated
-from accounts.models import RefreshToken
 
 
 PROJECT_NAME = settings.JWT_AUTH["PROJECT_NAME"]
@@ -20,6 +24,7 @@ JWT_ALGORITHM = settings.JWT_AUTH["JWT_ALGORITHM"]
 
 
 @api_view(["POST"])
+@authentication_classes([JWTCookieAuthentication])
 def login_view(request):
     """ POST {"email", "password"} """
 
@@ -46,7 +51,7 @@ def login_view(request):
             key="accessToken", value=access_token, max_age=max_age, httponly=True,
         )
 
-        return
+        return response
     else:
         return Response(
             data={
@@ -59,6 +64,7 @@ def login_view(request):
 
 
 @api_view(["DELETE"])
+@authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
     response = Response(data={"success": True,}, status=status.HTTP_200_OK,)

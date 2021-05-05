@@ -20,7 +20,6 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
     def authenticate(self, request):
         token = request.META.get("HTTP_AUTHORIZATION")
-        print(token)
         if not token:
             return None
         try:
@@ -50,4 +49,30 @@ class JWTAuthentication(authentication.BaseAuthentication):
             User.DoesNotExist,
             exceptions.AuthenticationFailed,
         ):
+            return None
+
+
+class JWTCookieAuthentication(authentication.BaseAuthentication):
+    def authenticate(self, request):
+        token = request.META.get("HTTP_COOKIE")
+        if token == "":
+            return None
+        try:
+            token = token.split("accessToken=")
+            token = token[token.index("") + 1].split(";")[0]
+            access_data = jwt.decode(
+                token,
+                JWT_SECRET_KEY,
+                JWT_ALGORITHM,
+                audience=f"urn:{PROJECT_NAME}:user",
+            )
+            if access_data["type"] != "access":
+                return None
+            uuid = access_data["sub"]
+            user = User.objects.get(uuid=uuid)
+            if user.refresh_tokens.count() == 0:
+                msg = _("Invalid authentication access.")
+                raise exceptions.AuthenticationFailed(msg)
+            return user, None
+        except:
             return None
