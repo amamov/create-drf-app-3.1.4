@@ -1,0 +1,21 @@
+{% extends "rest_framework/base.html" %}
+
+{#{% load static %}#}
+
+{# https://bootswatch.com/3/ #}
+{% block bootstrap_theme %}
+<link rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.min.css" type="text/css">
+{#<link rel="stylesheet" href="https://bootswatch.com/3/darkly/bootstrap.min.css" type="text/css">#}
+
+{#<link rel="stylesheet" href="{% static 'css/main.css' %}" type="text/css">#}
+{% endblock %}
+
+{#{% block title %} amamov api {% endblock %}#}
+
+
+{% block bootstrap_navbar_variant %}{% endblock %}
+
+
+{% block branding %}
+<a class="navbar-brand" rel="nofollow" href="#">Yoon - Sang Seok API</a>
+{% endblock %}
