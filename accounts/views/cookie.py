@@ -1,15 +1,20 @@
 """
-auth api using httponly cookies. (refreshToken)
-rt는 httponly cookie에 저장하고 at는 클라이언트의 로컬 변수에 저장한다.
-보안상 안전하지만, 프런트에서 at를 매번 refreshtoken으로 발급받아야 하므로 서버에 부하가 걸리기 쉬울 듯 하다.
+auth api using httponly cookies.
+rt, at 모두 httponly cookie에 저장하고 프런트에서는 만료 시간 계산해서 넘겨준다.
 """
+
 
 import jwt
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from rest_framework.response import Response
+from accounts.authentication import JWTCookieAuthentication
 from accounts.jwt import generate_access_token, generate_refresh_token
 from accounts.permissions import IsAuthenticated
 from accounts.models import RefreshToken
@@ -39,20 +44,24 @@ def login_view(request):
     user = authenticate(email=email, password=password)
 
     if user:
-        access_token, exp_timestamp, _ = generate_access_token(user)
+        access_token, exp_timestamp, at_max_age = generate_access_token(user)
         refresh_obj = RefreshToken()
-        refresh_token, max_age = generate_refresh_token(user, request, refresh_obj)
+        refresh_token, _, rt_max_age = generate_refresh_token(
+            user, request, refresh_obj
+        )
         response = Response(
             data={
                 "success": True,
-                "accessToken": access_token,
                 "accessTokenExp": exp_timestamp,
                 "user": {"email": email},
             },
             status=status.HTTP_200_OK,
         )
         response.set_cookie(
-            key="refreshToken", value=refresh_token, max_age=max_age, httponly=True,
+            key="refreshToken", value=refresh_token, max_age=rt_max_age, httponly=True,
+        )
+        response.set_cookie(
+            key="accessToken", value=access_token, max_age=at_max_age, httponly=True,
         )
         return response
     else:
@@ -67,6 +76,8 @@ def login_view(request):
 
 
 @api_view(["POST"])
+@authentication_classes([JWTCookieAuthentication])
+@permission_classes([IsAuthenticated])
 def refresh_view(request):
     """ POST """
 
@@ -112,10 +123,10 @@ def refresh_view(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    refresh_token, max_age = generate_refresh_token(
+    refresh_token, _, rt_max_age = generate_refresh_token(
         refresh_obj.user, request, refresh_obj
     )
-    access_token, exp_timestamp, _ = generate_access_token(refresh_obj.user)
+    access_token, exp_timestamp, at_max_age = generate_access_token(refresh_obj.user)
 
     response = Response(
         data={
@@ -128,13 +139,17 @@ def refresh_view(request):
         status=status.HTTP_200_OK,
     )
     response.set_cookie(
-        key="refreshToken", value=refresh_token, max_age=max_age, httponly=True,
+        key="refreshToken", value=refresh_token, max_age=rt_max_age, httponly=True,
+    )
+    response.set_cookie(
+        key="refreshToken", value=refresh_token, max_age=at_max_age, httponly=True,
     )
 
     return response
 
 
 @api_view(["DELETE"])
+@authentication_classes([JWTCookieAuthentication])
 @permission_classes([IsAuthenticated])
 def all_logout_view(request):
     # 강제 로그아웃 즉, 모든 refresh token을 비운다.
@@ -147,19 +162,21 @@ def all_logout_view(request):
         }
     )
     response.delete_cookie("refreshToken")
+    response.delete_cookie("accessToken")
     return response
 
 
 @api_view(["POST"])
 def logout_view(request):
-    """ POST { "refreshToken" } """
+    """ POST """
     refresh_token = request.COOKIES.get("refreshToken", None)  # refresh token 가져오기
 
     if not refresh_token:
         return Response(
             data={
                 "success": False,
-                "message": "The token value was not delivered normally.",
+                "message": "The token value was not delivered normally.\
+                 (이미 만료된 토큰이거나 토큰이 정상적으로 전달되지 않았습니다.)",
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
@@ -196,6 +213,7 @@ def logout_view(request):
             status=status.HTTP_200_OK,
         )
         response.delete_cookie("refreshToken")
+        response.delete_cookie("accessToken")
         return response
     except RefreshToken.DoesNotExist:
         # 변조 가능성

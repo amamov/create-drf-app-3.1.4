@@ -64,5 +64,6 @@ def generate_refresh_token(user, request, refresh_obj):
             JWT_SECRET_KEY,
             algorithm=JWT_ALGORITHM,
         ),
+        exp.timestamp(),
         timezone.timedelta(hours=REFRESH_TOKEN_EXPIRES_HOURS).seconds,  # Max-Age
     )

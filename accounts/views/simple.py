@@ -1,6 +1,6 @@
 """
 not using refresh token
-오직 refresh token만 사용
+오직 acess token만 사용
 """
 
 from django.conf import settings
@@ -12,7 +12,6 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework.response import Response
-
 from accounts.authentication import JWTCookieAuthentication
 from accounts.jwt import generate_access_token
 from accounts.permissions import IsAuthenticated
@@ -42,7 +41,7 @@ def login_view(request):
         )
     user = authenticate(email=email, password=password)
     if user:
-        access_token, exp_timestamp, max_age = generate_access_token(user)
+        access_token, _, max_age = generate_access_token(user)
 
         response = Response(
             data={"success": True, "client": "반갑습니다. :)"}, status=status.HTTP_200_OK,

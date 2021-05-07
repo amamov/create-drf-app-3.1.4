@@ -14,7 +14,7 @@ JWT_ALGORITHM = settings.JWT_AUTH["JWT_ALGORITHM"]
 class JWTAuthentication(authentication.BaseAuthentication):
 
     """
-    [header]
+    [Header]
     AUTHORIZATION : Bearer header.payload.Signature
     """
 
@@ -53,13 +53,29 @@ class JWTAuthentication(authentication.BaseAuthentication):
 
 
 class JWTCookieAuthentication(authentication.BaseAuthentication):
+
+    """
+    [Cookie]
+    accessToken=laskdjasljda.djskfhjkd.asldjlaskd
+    """
+
+    @classmethod
+    def token_parser(cls, cookies: str) -> str:
+        cookies: list = cookies.split("; ")
+        token = ""
+        for cookie in cookies:
+            if cookie[:12] == "accessToken=":
+                token = cookie[12:]
+        return token
+
     def authenticate(self, request):
         token = request.META.get("HTTP_COOKIE")
+        if token is None:
+            return None
+        token = JWTCookieAuthentication.token_parser(token)
         if token == "":
             return None
         try:
-            token = token.split("accessToken=")
-            token = token[token.index("") + 1].split(";")[0]
             access_data = jwt.decode(
                 token,
                 JWT_SECRET_KEY,

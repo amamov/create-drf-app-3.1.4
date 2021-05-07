@@ -34,7 +34,7 @@ def login_view(request):
     if user:
         access_token, exp_timestamp, _ = generate_access_token(user)
         refresh_obj = RefreshToken()
-        refresh_token, max_age = generate_refresh_token(user, request, refresh_obj)
+        refresh_token, _, max_age = generate_refresh_token(user, request, refresh_obj)
         return Response(
             data={
                 "success": True,
@@ -112,7 +112,7 @@ def refresh_view(request):
             status=status.HTTP_401_UNAUTHORIZED,
         )
 
-    refresh_token, max_age = generate_refresh_token(
+    refresh_token, _, max_age = generate_refresh_token(
         refresh_obj.user, request, refresh_obj
     )
     access_token, exp_timestamp, _ = generate_access_token(refresh_obj.user)
