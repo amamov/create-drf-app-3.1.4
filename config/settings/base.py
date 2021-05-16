@@ -7,7 +7,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths insi
+# de the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -120,8 +121,8 @@ AUTH_USER_MODEL = "accounts.User"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        "accounts.authentication.JWTAuthentication",
-        "accounts.authentication.JWTCookieAuthentication",
+        # "accounts.authentication.JWTAuthentication",
+        # "accounts.authentication.JWTCookieAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.permissions.AllowAny",]
     # "DEFAULT_THROTTLE_CLASSES": [
