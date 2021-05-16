@@ -121,8 +121,7 @@ AUTH_USER_MODEL = "accounts.User"
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
-        # "accounts.authentication.JWTAuthentication",
-        # "accounts.authentication.JWTCookieAuthentication",
+        "accounts.authentication.JWTAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.permissions.AllowAny",]
     # "DEFAULT_THROTTLE_CLASSES": [
@@ -146,8 +145,5 @@ JWT_AUTH = {
     "PROJECT_NAME": os.environ.get("PROJECT_NAME", "amamov"),
     "JWT_SECRET_KEY": os.environ.get("JWT_SECRET_KEY", SECRET_KEY),
     "JWT_ALGORITHM": "HS256",
-    "ACCESS_TOKEN_EXPIRES_MINUTES": os.environ.get(
-        "JWT_ACCESS_TOKEN_EXPIRES_MINUTES", "2"
-    ),
-    "REFRESH_TOKEN_EXPIRES_HOURS": os.environ.get("REFRESH_TOKEN_EXPIRES_HOURS", "1"),
+    "ACCESS_TOKEN_EXPIRES_HOURS": os.environ.get("ACCESS_TOKEN_EXPIRES_HOURS", "1"),
 }

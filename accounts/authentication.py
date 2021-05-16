@@ -37,58 +37,18 @@ class JWTAuthentication(authentication.BaseAuthentication):
                 return None
             uuid = access_data["sub"]
             user = User.objects.get(uuid=uuid)
-            if user.refresh_tokens.count() == 0:
+            if user.access_tokens.count() == 0:
                 msg = _("Invalid authentication access.")
                 raise exceptions.AuthenticationFailed(msg)
             return user, None
+        except jwt.ExpiredSignatureError:
+            print("token 만료")
+            return None
         except (
             IndexError,
             KeyError,
             jwt.exceptions.DecodeError,
-            jwt.ExpiredSignatureError,
             User.DoesNotExist,
             exceptions.AuthenticationFailed,
         ):
-            return None
-
-
-class JWTCookieAuthentication(authentication.BaseAuthentication):
-
-    """
-    [Cookie]
-    accessToken=laskdjasljda.djskfhjkd.asldjlaskd
-    """
-
-    @classmethod
-    def token_parser(cls, cookies: str) -> str:
-        cookies: list = cookies.split("; ")
-        token = ""
-        for cookie in cookies:
-            if cookie[:12] == "accessToken=":
-                token = cookie[12:]
-        return token
-
-    def authenticate(self, request):
-        token = request.META.get("HTTP_COOKIE")
-        if token is None:
-            return None
-        token = JWTCookieAuthentication.token_parser(token)
-        if token == "":
-            return None
-        try:
-            access_data = jwt.decode(
-                token,
-                JWT_SECRET_KEY,
-                JWT_ALGORITHM,
-                audience=f"urn:{PROJECT_NAME}:user",
-            )
-            if access_data["type"] != "access":
-                return None
-            uuid = access_data["sub"]
-            user = User.objects.get(uuid=uuid)
-            if user.refresh_tokens.count() == 0:
-                msg = _("Invalid authentication access.")
-                raise exceptions.AuthenticationFailed(msg)
-            return user, None
-        except:
             return None

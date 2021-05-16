@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from .models import RefreshToken
+from .models import AccessToken
 
 User = get_user_model()
 
 
-@admin.register(RefreshToken)
+@admin.register(AccessToken)
 class RefreshTokenAdmin(admin.ModelAdmin):
 
     """ Refresh Token Admin """

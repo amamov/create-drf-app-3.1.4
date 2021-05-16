@@ -51,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # REQUIRED_FIELDS = ["username"]
 
 
-class RefreshToken(models.Model):
+class AccessToken(models.Model):
 
     """ Refresh Token Model """
 
@@ -60,7 +60,7 @@ class RefreshToken(models.Model):
     user = models.ForeignKey(
         "User",
         on_delete=models.CASCADE,
-        related_name="refresh_tokens",
+        related_name="access_tokens",
         null=False,
         blank=False,
     )
