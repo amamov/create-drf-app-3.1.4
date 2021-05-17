@@ -43,6 +43,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
             return user, None
         except jwt.ExpiredSignatureError:
             print("token 만료")
+            # TODO : 만료되었을 때 DB에서 삭제
             return None
         except (
             IndexError,
