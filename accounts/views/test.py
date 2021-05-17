@@ -1,12 +1,12 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
-from accounts.authentication import JWTAuthentication
+from accounts.authentication import JWTAuthentication, CsrfExemptSessionAuthentication
 from accounts.permissions import IsAuthenticated
 
 
 class TestView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [CsrfExemptSessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

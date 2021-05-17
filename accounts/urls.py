@@ -1,5 +1,4 @@
 from django.urls import path
-
 from .views import session as web_views, token as token_views, test as test_views
 
 

@@ -19,6 +19,8 @@ ALLOWED_HOSTS = []
 
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SAMESITE = None
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
 
 # Application definition
 
@@ -120,8 +122,9 @@ AUTH_USER_MODEL = "accounts.User"
 # DRF
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "accounts.authentication.JWTAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        # "accounts.authentication.JWTAuthentication",
+        "accounts.authentication.CsrfExemptSessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["accounts.permissions.AllowAny",]
     # "DEFAULT_THROTTLE_CLASSES": [

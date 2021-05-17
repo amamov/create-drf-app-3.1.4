@@ -11,6 +11,11 @@ JWT_SECRET_KEY = settings.JWT_AUTH["JWT_SECRET_KEY"]
 JWT_ALGORITHM = settings.JWT_AUTH["JWT_ALGORITHM"]
 
 
+class CsrfExemptSessionAuthentication(authentication.SessionAuthentication):
+    def enforce_csrf(self, request):
+        return
+
+
 class JWTAuthentication(authentication.BaseAuthentication):
 
     """
