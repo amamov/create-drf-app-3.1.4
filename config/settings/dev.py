@@ -14,7 +14,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # django-debug-toolbar
 INSTALLED_APPS += ["debug_toolbar"]
 MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
-INTERNAL_IPS = ["127.0.0.1"]
+INTERNAL_IPS = ["127.0.0.1", "localhost"]
 
 # drf-yasg
 INSTALLED_APPS += ["drf_yasg"]

@@ -9,17 +9,17 @@ class UserManager(BaseUserManager):
 
     use_in_migrations = True
 
-    def create_user(self, email, password):
+    def create_user(self, email, username, password):
         if not email:
             raise ValueError("Email is Required.")
-        user = self.model(email=email)
+        user = self.model(email=email, username=username)
         if password:
             user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password):
-        user = self.model(email=email, date_joined=timezone.now())
+    def create_superuser(self, email, username, password):
+        user = self.model(email=email, username=username, date_joined=timezone.now())
         user.set_password(password)
         user.is_superuser = True
         user.is_admin = True
@@ -38,6 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         primary_key=True, default=uuid4, null=False, blank=False, auto_created=True,
     )
     email = models.EmailField(max_length=254, unique=True)
+    username = models.CharField(max_length=64, unique=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -48,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     USERNAME_FIELD = "email"
-    # REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ["username"]
 
 
 class AccessToken(models.Model):
