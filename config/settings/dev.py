@@ -1,10 +1,8 @@
 from .base import *
 
 DEBUG = True
-SESSION_COOKIE_SECURE = False
-
-# django-cors-headers
 CORS_ORIGIN_ALLOW_ALL = True
+SESSION_COOKIE_SECURE = False
 
 # django-debug-toolbar
 INSTALLED_APPS += ["debug_toolbar"]

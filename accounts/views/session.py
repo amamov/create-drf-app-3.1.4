@@ -13,7 +13,7 @@ X-CSRFToken: llhNXa5JtSoF5YRyT7HDhgM9PsxTLQZ9psDU
 
 
 @api_view(["POST"])
-def loginw(request):
+def login(request):
     serializer = LoginSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.validated_data["user"]

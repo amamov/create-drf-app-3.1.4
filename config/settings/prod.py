@@ -2,10 +2,9 @@ from .base import *
 
 
 DEBUG = False
-SESSION_COOKIE_SECURE = True
-
-CORS_ORIGIN_ALLOW_ALL = False
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+SESSION_COOKIE_SECURE = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
 
 # Storage
