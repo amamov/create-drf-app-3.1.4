@@ -2,8 +2,15 @@ from .base import *
 
 
 DEBUG = False
+
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+
 SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_DOMAIN = ".amamov.co"
+
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = ".amamov.co"
+
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
 
