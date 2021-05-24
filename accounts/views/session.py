@@ -1,8 +1,8 @@
 from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth.models import AnonymousUser
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from accounts.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from accounts.serializers import UserSerializer, LoginSerializer
 
 """
@@ -14,10 +14,14 @@ X-CSRFToken: llhNXa5JtSoF5YRyT7HDhgM9PsxTLQZ9psDU
 
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])
 def me(request):
     user = request.user
-    return Response(data=UserSerializer(instance=user).data, status=status.HTTP_200_OK,)
+    if isinstance(user, AnonymousUser):
+        return Response(data={"success": False}, status=status.HTTP_200_OK,)
+    return Response(
+        data={"success": True, **UserSerializer(instance=user).data},
+        status=status.HTTP_200_OK,
+    )
 
 
 @api_view(["POST"])
